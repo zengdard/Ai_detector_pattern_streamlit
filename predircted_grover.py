@@ -7,13 +7,13 @@ st.title('StendhalGPT')
 token = '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'
 API_URL = "https://api-inference.huggingface.co/models/roberta-large-openai-detector"
 headers = {"Authorization": f"Bearer {token}"}
-st.text('Cet outils est en version de développement.' )
+st.text('Cet outil est en version de développement.' )
 def query(payload):
     
     response = requests.post(API_URL, headers=headers, json=payload)
     return response.json()
 
-default_value_goes_here = 'Quel est votre texte ? (Anglais Uniquement et de taille moyenne).'
+default_value_goes_here = 'Quel est votre texte ? (Anglais Uniquement).'
 user_input = st.text_input("Votre texte ici.", default_value_goes_here)
 
 
