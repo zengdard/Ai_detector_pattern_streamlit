@@ -1,0 +1,6 @@
+requests==2.25.0
+streamlit==0.65.2
+nltk==3.5
+pandas==1.2.3
+seaborn==0.11.0
+matplotlib==3.3.2
