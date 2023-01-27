@@ -2,6 +2,7 @@ import requests
 import streamlit as st
 
 import nltk
+nltk.download('popular')
 from nltk.probability import FreqDist
 from nltk.corpus import stopwords
 import string
