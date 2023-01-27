@@ -23,7 +23,7 @@ st.title('StendhalGPT')
 token = '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'
 API_URL = "https://api-inference.huggingface.co/models/roberta-large-openai-detector"
 headers = {"Authorization": f"Bearer {token}"}
-st.caption('Cet outil est en version de développement.' )
+st.text('Cet outil est en version de développement.' )
 
 st.subheader("Fonctionnement via GPT-2.")
 st.text('Cette option est valable uniquement pour les textes en Anglais et fonctionne avec le modèle GPT-2 Detector.' )
@@ -101,7 +101,7 @@ if st.button('Vérifier via GPT-2'):
 
 if st.button('Vérifier via la richesse lexicale'): 
     st.markdown("### Résultat sur la richesse lexicale.")
-    st.caption("La richesse lexicale est un indicateur utilisé en traitement automatique du langage naturel (NLP) pour mesurer la variété de mots utilisés dans un texte. Il peut être calculé en divisant le nombre total de mots uniques dans un texte par le nombre total de mots dans ce même texte. Plus la richesse lexicale est élevée, plus le texte contient de mots différents. Il est important de noter que cet indicateur ne prend pas en compte la pertinence des mots utilisés, seulement leur diversité. Il est souvent utilisé pour évaluer la qualité de la langue d'un texte")
+    st.st.text("La richesse lexicale est un indicateur utilisé en traitement automatique du langage naturel (NLP) pour mesurer la variété de mots utilisés dans un texte. Il peut être calculé en divisant le nombre total de mots uniques dans un texte par le nombre total de mots dans ce même texte. Plus la richesse lexicale est élevée, plus le texte contient de mots différents. Il est important de noter que cet indicateur ne prend pas en compte la pertinence des mots utilisés, seulement leur diversité. Il est souvent utilisé pour évaluer la qualité de la langue d'un texte")
     st.markdown(f"Taux correspondant à la richesse lexicale de votre texte : {lexical_richness(text)} ")
     st.markdown(f"Taux correspondant à la richesse grammaticale de votre texte : {grammatical_richness(text)} ")
     st.markdown(f"Taux correspondant à la richesse verbale de votre texte : {verbal_richness(text)} ")    
