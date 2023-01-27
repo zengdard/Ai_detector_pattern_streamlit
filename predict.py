@@ -2,7 +2,7 @@ import requests
 import streamlit as st
 
 import nltk
-nltk.download('popular')
+#nltk.download('popular')
 from nltk.probability import FreqDist
 from nltk.corpus import stopwords
 import string
@@ -13,9 +13,9 @@ import matplotlib.pyplot as plt
 from nltk.tokenize import word_tokenize
 from nltk.tag import pos_tag
 
-nltk.download('punkt')
+#nltk.download('punkt')
 nltk.download('stopwords')
-nltk.download('averaged_perceptron_tagger')
+#nltk.download('averaged_perceptron_tagger')
 
 stop_words = set(stopwords.words('french'))
 
@@ -38,6 +38,7 @@ def query(payload):
 
 text = st.text_input("", 'Votre Texte.')
 user_input = text
+'''
 def grammatical_richness(text):
     words = word_tokenize(text)
     words = [word for word in words if word.isalnum()]
@@ -59,7 +60,7 @@ def verbal_richness(text):
     types = len(fdist.keys())
     tokens = len(words)
     return types / tokens
-
+'''
 
 
 
@@ -103,12 +104,12 @@ if st.button('Vérifier via la richesse lexicale'):
     st.markdown("### Résultat sur la richesse lexicale.")
     st.st.text("La richesse lexicale est un indicateur utilisé en traitement automatique du langage naturel (NLP) pour mesurer la variété de mots utilisés dans un texte. Il peut être calculé en divisant le nombre total de mots uniques dans un texte par le nombre total de mots dans ce même texte. Plus la richesse lexicale est élevée, plus le texte contient de mots différents. Il est important de noter que cet indicateur ne prend pas en compte la pertinence des mots utilisés, seulement leur diversité. Il est souvent utilisé pour évaluer la qualité de la langue d'un texte")
     st.markdown(f"Taux correspondant à la richesse lexicale de votre texte : {lexical_richness(text)} ")
-    st.markdown(f"Taux correspondant à la richesse grammaticale de votre texte : {grammatical_richness(text)} ")
-    st.markdown(f"Taux correspondant à la richesse verbale de votre texte : {verbal_richness(text)} ")    
+    #st.markdown(f"Taux correspondant à la richesse grammaticale de votre texte : {grammatical_richness(text)} ")
+    #st.markdown(f"Taux correspondant à la richesse verbale de votre texte : {verbal_richness(text)} ")    
     resul = lexical_field(text)
     resul = resul.most_common(4)
  #   detail = [('Richesse lexicale',lexical_richness(text)),('Richesses Grammaticale',grammatical_richness(text)), ('Richesse Verbale',verbal_richness(text))]
-    df = pd.DataFrame(resul, columns=["Mots", "Fréquences"])
+    #df = pd.DataFrame(resul, columns=["Mots", "Fréquences"])
 #    df_2 = pd.DataFrame(detail, columns=["Type", "Taux"])
-    st.dataframe(df)
+    #st.dataframe(df)
     bar.progress(100) 
