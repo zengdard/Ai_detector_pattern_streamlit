@@ -14,7 +14,7 @@ from nltk.tokenize import word_tokenize
 from nltk.tag import pos_tag
 
 #nltk.download('punkt')
-nltk.download('stopwords')
+#nltk.download('stopwords')
 #nltk.download('averaged_perceptron_tagger')
 
 stop_words = set(stopwords.words('french'))
