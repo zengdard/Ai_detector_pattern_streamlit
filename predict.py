@@ -38,29 +38,7 @@ def query(payload):
 
 text = st.text_input("", 'Votre Texte.')
 user_input = text
-'''
-def grammatical_richness(text):
-    words = word_tokenize(text)
-    words = [word for word in words if word.isalnum()]
-    words_pos = pos_tag(words)
-    words_pos = [word for word in words_pos if word[0] not in stop_words]
-    pos = [pos for word, pos in words_pos]
-    fdist = FreqDist(pos)
-    types = len(fdist.keys())
-    tokens = len(words)
-    return types / tokens
 
-def verbal_richness(text):
-    words = word_tokenize(text)
-    words = [word for word in words if word.isalnum()]
-    words_pos = pos_tag(words)
-    words_pos = [word for word in words_pos if word[0] not in stop_words]
-    verbs = [word for word, pos in words_pos if pos[:2] == 'VB']
-    fdist = FreqDist(verbs)
-    types = len(fdist.keys())
-    tokens = len(words)
-    return types / tokens
-'''
 
 
 
