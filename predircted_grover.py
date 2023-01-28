@@ -7,7 +7,7 @@ st.title('StendhalGPT')
 token = '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'
 API_URL = "https://api-inference.huggingface.co/models/roberta-large-openai-detector"
 headers = {"Authorization": f"Bearer {token}"}
-st.text('Cet outils est en version de développement.' )
+st.text('Cet outils est en version de développement, vous pouvez nous retrouver sur Twitter à @stendhalgpt.' )
 def query(payload):
     
     response = requests.post(API_URL, headers=headers, json=payload)
