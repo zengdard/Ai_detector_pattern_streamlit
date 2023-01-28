@@ -28,4 +28,4 @@ if st.button('Vérifier'):
         else : 
             st.text('Votre texte est à '+ str(round(output[0][1]['score'], 2)*100)+'% de chance d\'être génèré par une IA.' ) 
     except:
-        st.text('Le service est temporairement indisponible, merci de votre compréhension.' )
+        st.text('Le service est temporairement indisponible,veuillez patienter une minute.' )
