@@ -45,7 +45,7 @@ user_input = text
 def lexical_field(text):
     # Tokenization du texte
     words = nltk.word_tokenize(text)
-    stop_words = set(stopwords.words("french") + list(string.punctuation))
+    stop_words = set(list(string.punctuation))
     words = [word for word in words if word.lower() not in stop_words]
     # Calcul des fréquences des mots
     fdist = FreqDist(words)
@@ -87,7 +87,7 @@ if st.button('Vérifier via la richesse lexicale'):
     resul = lexical_field(text)
     resul = resul.most_common(4)
  #   detail = [('Richesse lexicale',lexical_richness(text)),('Richesses Grammaticale',grammatical_richness(text)), ('Richesse Verbale',verbal_richness(text))]
-    #df = pd.DataFrame(resul, columns=["Mots", "Fréquences"])
+    df = pd.DataFrame(resul, columns=["Mots", "Fréquences"])
 #    df_2 = pd.DataFrame(detail, columns=["Type", "Taux"])
-    #st.dataframe(df)
+    st.dataframe(df)
     bar.progress(100) 
