@@ -12,7 +12,6 @@ from collections import defaultdict
 
 
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
 from nltk.tokenize import word_tokenize
 from nltk.tag import pos_tag
