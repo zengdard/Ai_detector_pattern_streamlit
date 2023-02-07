@@ -19,6 +19,7 @@ from nltk.tag import pos_tag
 from nltk.util import ngrams
 from nltk.probability import *
 
+from math import sqrt
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -33,15 +34,13 @@ st.title('StendhalGPT')
 
 bar = st.progress(0)
 
-st.subheader("Comment fonctionne la richesse lexicale ?")
+st.subheader("Comment fonctionne le taux lexical ?")
 st.caption(r"La richesse lexicale est cruciale dans la reconnaissance de textes générés par l'IA. Elle se réfère à la variété et à la quantité de mots utilisés dans un texte, qui peuvent influencer la compréhension et l'analyse du contenu par un système informatique. Une richesse lexicale élevée peut aider à améliorer la précision de la reconnaissance de textes générés par l'IA. Cependant, il est important de ne pas confondre richesse lexicale et complexité, car un texte peut être riche en termes de vocabulaire sans pour autant être complexe. En mesurant la richesse lexicale des textes générés par l'IA, nous pouvons améliorer la qualité des analyses et des prédictions effectuées par les modèles. ")
 
-#st.subheader("Comment fonctionne le taux de perplexité ?")
-#st.caption(r"")
+text_ref = st.text_input("", 'Insérez un texte de référence ici.')
 
 text = st.text_input("", 'Votre Texte.')
 
-#text_ref = st.text_input("", 'Quel est votre texte de référence ? ')
 
 user_input = text
 
@@ -88,7 +87,18 @@ def lexical_richness(text):
     # Calcul de l'étendue du champ lexical
     type_token_ratio = len(set(words)) / len(words)
     return type_token_ratio
+
+def highlight_text2(text, words_to_highlight):
+    # Compile la liste de mots à surligner en une expression régulière
+    words_regex = "|".join(words_to_highlight)
+    pattern = re.compile(r"\b(" + words_regex + r")\b")
     
+    # Remplace les mots correspondant à la condition par des mots entourés de balises HTML <mark>
+    highlighted_text = pattern.sub(r"**<span style='background-color: blue;'>\1</span>**", text)
+    return highlighted_text
+
+def distance(p1, p2):
+    return sqrt((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)
 
 
 def highlight_text(text, words_to_highlight):
@@ -100,8 +110,6 @@ def highlight_text(text, words_to_highlight):
     highlighted_text = pattern.sub(r"**<span style='background-color: red;'>\1</span>**", text)
     return highlighted_text
 
-model = defaultdict(lambda : defaultdict(lambda : 0.01))
-n = 3
 
 def calculate_perplexity(trained_text, test_text):
     trained_tokens = nltk.word_tokenize(trained_text)
@@ -111,42 +119,166 @@ def calculate_perplexity(trained_text, test_text):
     test_tokens = nltk.word_tokenize(test_text)
     return model.perplexity(test_tokens)
 
+from nltk import bigrams
+from collections import Counter
+
+def compare_markov_model(text1, text2):
+    # tokenize les deux textes
+    tokens1 = nltk.word_tokenize(text1)
+    tokens2 = nltk.word_tokenize(text2)
+
+    # créer des bigrames pour les deux textes
+    bigrams1 = list(bigrams(tokens1))
+    bigrams2 = list(bigrams(tokens2))
+
+    # compter le nombre d'occurences de chaque bigramme
+    count1 = Counter(bigrams1)
+    count2 = Counter(bigrams2)
+
+    # mesurer la probabilité de transition pour chaque bigramme dans les deux textes
+    prob1 = {bigram: count/len(bigrams1) for bigram, count in count1.items()}
+    prob2 = {bigram: count/len(bigrams2) for bigram, count in count2.items()}
+
+    # mesurer la différence entre les deux probabilités pour chaque bigramme
+    diff = {bigram: abs(prob1[bigram] - prob2[bigram]) for bigram in prob1.keys() & prob2.keys()}
+
+    return diff
+
+col1, col2 = st.columns(2)
 
 
 
 
+if st.button('Vérifier via le taux lexical.'): #intégrer le texte de référence pour plus de rapidité 
 
-if st.button('Vérifier via la richesse lexicale.'): 
+    with col1:
 
-    st.markdown("### Résultat sur la richesse lexicale.")
-    st.caption("La richesse lexicale est un indicateur utilisé pour mesurer la variété, la richesse de mots utilisés dans un texte. Il est calculé en divisant le nombre total de mots uniques dans un texte par le nombre total de mots dans ce même texte. Plus la richesse lexicale est élevée, plus le texte contient de mots différents. Il est important de noter que cet indicateur ne prend pas en compte la pertinence des mots utilisés, seulement leur diversité.")
-    st.markdown(f"Taux correspondant à la richesse lexicale de votre texte : **{round(lexical_richness(text),4)}** ")
-    st.markdown(f"Taux correspondant à la richesse grammaticale de votre texte : **{round(grammatical_richness(text),4)}** ")
-    st.markdown(f"Taux correspondant à la richesse verbale de votre texte : **{round(verbal_richness(text),4)}** ")    
-    resul = lexical_field(text)
-    try:
-        resul2 = resul.most_common(25)   #récupérer les derniers mots car les modèles répètent rarement des sentences.
-                            #Donner le nombre de termes pour une meilleur identification. 
-    except:
+        richesse_lex = round(lexical_richness(text),4)
+        richesse_gram = round(grammatical_richness(text),4)
+        richesse_verbale = round(verbal_richness(text),4)
+
+        st.markdown("### Résultat sur le taux lexical.")
+        st.markdown(f"Taux correspondant au taux lexical de votre texte : **{richesse_lex}** ")
+        st.markdown(f"Taux correspondant au taux grammatical de votre texte : **{richesse_gram}** ")
+        st.markdown(f"Taux correspondant au taux verbal de votre texte : **{richesse_verbale}** ")    
+        resul = lexical_field(text)
+
         try:
-            resul2 = resul.most_common(5)
+            resul2 = resul.B()
+            resul2 = resul.most_common(resul2)
+            print(resul2)
+            
+
+                                #Donner le nombre de termes pour une meilleur identification. 
         except:
-            st.warning('texte trop court.')
-    words_to_highlight = []
-    for x in resul2:
-        words_to_highlight.append(x[0])
-    plt.figure(figsize=(10,5))
-    resul.plot(30, cumulative=False)
+            try:
+                resul2 = resul.B()
+                print(resul2)
+                resul2 = resul.most_common(resul2)
+
+            except:
+                st.warning('texte trop court.')
+        words_to_highlight = []
+        i = 34
+        for x in resul2 : 
+            words_to_highlight.append(x[0])
+            bar.progress(i + 2)
+        words_to_highlight_reverse = list(reversed(words_to_highlight))
+        
+        plt.figure(figsize=(10,5))
+        resul.plot(30, cumulative=False)
+        bar.progress(79) 
+        st.pyplot(plt)
+       # xslider = st.slider('Sélectionner une valeur', min_value=0, max_value=len(resul2), value=4)
+        highlighted_text = highlight_text(text, words_to_highlight[:4])
+        highlighted_text2 = highlight_text2(text, words_to_highlight_reverse[4:])
+        st.markdown("**Mots les moins cités** : \n" +str(highlighted_text2), unsafe_allow_html=True)
+        st.markdown("**Mots les plus cités** : \n" +str(highlighted_text), unsafe_allow_html=True)
+        
+    ##Pour le texte de Référence 
+    with col2 :
+        text = text_ref
+
+        richesse_lex2 = round(lexical_richness(text),4)
+        richesse_gram2 = round(grammatical_richness(text),4)
+        richesse_verbale2 = round(verbal_richness(text),4)
+
+        st.markdown("### Résultat sur le taux lexical pour le texte de référence.")
+        st.markdown(f"Taux correspondant au taux lexical de votre texte : **{richesse_lex2}** ")
+        st.markdown(f"Taux correspondant au taux grammatical de votre texte : **{richesse_gram2}** ")
+        st.markdown(f"Taux correspondant au taux verbal de votre texte : **{richesse_verbale2}** ")    
+
+        resul = lexical_field(text)
+        
+        try:
+            resul2 = resul.B()
+            resul2 = resul.most_common(resul2)
+            
+
+                                #Demander le nombre de termes pour une meilleur identification. 
+        except:
+            try:
+                resul2 = resul.B()
+                print(resul2)
+                resul2 = resul.most_common(resul2)
+
+            except:
+                st.warning('texte trop court.')
+        words_to_highlight = []
+        i = 34
+        for x in resul2 : 
+            words_to_highlight.append(x[0])
+            bar.progress(i + 2)
+        words_to_highlight_reverse = list(reversed(words_to_highlight))
+        
+        plt.figure(figsize=(10,5))
+        resul.plot(30, cumulative=False)
+        bar.progress(79) 
+        st.pyplot(plt)
+
+       # yslider = st.slider('Sélectionner une valeur', min_value=0, max_value=len(resul2), value=4,)  #Doit quand modifier remettre à jour le texte surligné
+
+        highlighted_text = highlight_text(text, words_to_highlight[:4])
+        highlighted_text2 = highlight_text2(text, words_to_highlight_reverse[4:])
+        st.markdown("**Mots les moins cités** : \n" +str(highlighted_text2), unsafe_allow_html=True)
+        st.markdown("**Mots les plus cités** : \n" +str(highlighted_text), unsafe_allow_html=True)
+        
+
+    # Liste des coordonnées x et y des points à afficher
+
+    x = [richesse_lex, richesse_lex2]
+    y = [richesse_gram/richesse_verbale, richesse_gram2/richesse_verbale2]
+
+    # Création du graphique
+    fig, ax = plt.subplots()
+    ax.scatter(x, y)
+
+    # Ajout d'étiquettes et de limites aux axes
+    ax.set_xlabel("Taux lexical")
+    ax.set_ylabel("Rapport taux grammatical sur verbal")
+    ax.set_xlim([0, 6])
+    ax.set_ylim([0, 12])
+
     st.pyplot(plt)
-    highlighted_text = highlight_text(text, words_to_highlight)
-    st.markdown(highlighted_text, unsafe_allow_html=True)
+
+    dist = distance((x[0], y[0]), (x[1],y[1]))
+    st.markdown(f"Distance entre les points {dist}.")
+
+
     bar.progress(100) 
 
 
+if st.button('Vérifier via le modèle de Markov.'):
+    resultat  = compare_markov_model(text, text_ref)
+    key_list = []
+    value_list = []
+    for key, value in resultat.items():
+        key_list.append(key)
+        value_list.append(value)
+    df = pd.DataFrame(list(zip(key_list,value_list)), columns = ['Texte','Probabilité'])
 
-#if st.button('Vérifier via la perplexity.'):
+#convertion du dictionnaire en dataframe
 
-#    perp = calculate_perplexity(text_ref, text)
- #   st.markdown(f"Taux de perplexité de votre texte : **{round(perp,4)}** ")    
-
-
+    st.markdown(f"### Comment fonctionne la comparaison de deux modèles de Markov ?")
+    st.caption("L'obtention de la différence entre les résultats des modèles de Markov peut aider à déterminer si un texte est généré par une IA ou non. Une différence significative entre les modèles peut indiquer que le texte est généré par une IA, car les modèles de Markov mesurent la probabilité de transition entre les mots dans le texte, et les textes générés par une IA ont souvent des transitions entre les mots différentes de celles des textes réels.")
+    st.dataframe(df)
