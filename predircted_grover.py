@@ -177,8 +177,8 @@ if tabs =='Quésaco ?':
     #st.subheader("Comment fonctionne le taux lexical ?")
     #st.caption(r"La richesse lexicale est cruciale dans la reconnaissance de textes générés par l'IA. Elle se réfère à la variété et à la quantité de mots utilisés dans un texte, qui peuvent influencer la compréhension et l'analyse du contenu par un système informatique. Une richesse lexicale élevée peut aider à améliorer la précision de la reconnaissance de textes générés par l'IA. Cependant, il est important de ne pas confondre richesse lexicale et complexité, car un texte peut être riche en termes de vocabulaire sans pour autant être complexe. En mesurant la richesse lexicale des textes générés par l'IA, nous pouvons améliorer la qualité des analyses et des prédictions effectuées par les modèles. ")
     
-    st.markdown(f"### Comment fonctionne la comparaison de deux modèles de Markov ?")
-    st.caption("L'obtention de la différence entre les résultats des modèles de Markov peut aider à déterminer si un texte est généré par une IA ou non. Une différence significative entre les modèles peut indiquer que le texte est généré par une IA, car les modèles de Markov mesurent la probabilité de transition entre les mots dans le texte, et les textes générés par une IA ont souvent des transitions entre les mots différentes de celles des textes réels.")
+    st.subheader("Comment fonctionne la comparaison de deux modèles de Markov ?")
+    st.caption("La comparaison des résultats des modèles de Markov peut aider à déterminer si un texte a été généré par une IA ou non. Une différence significative entre les résultats peut indiquer que le texte a été généré par une IA. En effet, les modèles de Markov mesurent la probabilité de transition entre les mots dans un texte, et les textes générés par une IA ont souvent des transitions différentes de celles des textes réels. Par conséquent, si la différence entre les résultats des modèles est importante, cela peut suggérer que le texte a été généré par une IA plutôt que par un être humain.")
         
 
 elif tabs == 'StendhalGPT':
