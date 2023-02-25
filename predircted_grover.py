@@ -168,7 +168,7 @@ with st.sidebar:
 if tabs =='Quésaco ?':
     st.subheader('Quel est le principe d\'utilisation de StendhalGPT ?')
 
-    st.markdown('Nous avons conçu l\'application afin de permettre à ses utilisateurs de justifier ou de mesurer des anomalies dans des textes suspects. \nNous appelons "anomalies" des caractéristiques propores à une génération par une intelligence artificielle ou par des LLMs, et qui caractérisent un textes générés plutôt qu\'un texte écrit par un étudiant, c\'est à dire un très grand vocabulaire, de très bons taux lexicaux et verbaux, en comparaison avec des copies \'similaires\' dans leur exercice de conception.')
+    st.markdown("Nous avons conçu l\'application afin de permettre à ses utilisateurs de justifier ou de mesurer des anomalies dans des textes suspects. Nous appelons 'anomalies' des caractéristiques propores à une génération par une intelligence artificielle ou par des LLMs, et qui caractérisent un textes générés plutôt qu'un texte écrit par un étudiant, c'est à dire un très grand vocabulaire, de très bons taux lexicaux et verbaux, en comparaison avec des copies 'similaires' dans leur exercice de conception.")
 
     st.subheader('Comment tout cela fonctionne ?') 
 
