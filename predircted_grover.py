@@ -302,7 +302,7 @@ if tabs =='Quésaco ?':
 
     st.subheader('La différence relative')
 
-    st.markdown('La différence relative permet de mettre en évidence les différences significatives entre deux textes. Plus cet indicateur est élevé plus celui-ci indique que les textes sont significativement différents l\'un de l\'autre. ')
+    st.markdown('La différence relative permet de mettre en évidence les différences significatives entre deux textes. Plus cet indicateur est élevé plus celui-ci indique que les textes sont significativement différents les des autres. ')
 
 
    ## st.subheader("Comment fonctionne la comparaison de deux modèles de Markov ?")
