@@ -258,7 +258,7 @@ col1, col2 = st.columns(2)
 
 with st.sidebar:
         tabs = on_hover_tabs(tabName=['Quésaco ?','StendhalGPT', 'StendhalGPT Expert'], 
-                             iconName=['dashboard','money', 'money', 'money'],
+                             iconName=['dashboard','description',  'toll'],
                              styles = {'navtab': {'background-color':'#FFFFFF',
                                                   'color': '#000000',
                                                   'font-size': '18px',
