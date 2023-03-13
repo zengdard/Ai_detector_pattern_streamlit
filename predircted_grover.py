@@ -9,6 +9,7 @@ import re
 
 import statistics
 
+import altair as alt
 
 from nltk import bigrams
 from collections import Counter
@@ -155,7 +156,6 @@ def compute_text_metrics(lexical_density,grammatical_density,verbal_density):
     text_metric = (lexical_weight * lexical_density) + (grammatical_weight * grammatical_density) + (verbal_weight * verbal_density)
     ### Plus proche de 1 alors texte très riche et donc suspect 
 
-
     return text_metric 
 
 
@@ -257,8 +257,8 @@ col1, col2 = st.columns(2)
 
 
 with st.sidebar:
-        tabs = on_hover_tabs(tabName=['Quésaco ?','StendhalGPT', 'StendhalGPT Expert'], 
-                             iconName=['dashboard','description',  'toll'],
+        tabs = on_hover_tabs(tabName=['Quésaco ?','StendhalGPT', 'StendhalGPT Expert', 'StendhalGPT MultipleTextes'], 
+                             iconName=['help center','home',  'toll', 'analytics'],
                              styles = {'navtab': {'background-color':'#FFFFFF',
                                                   'color': '#000000',
                                                   'font-size': '18px',
@@ -274,7 +274,48 @@ with st.sidebar:
                                                      'margin-bottom': '30px',
                                                      'padding-left': '30px'}},
                              key="1")
+import numpy as np
 
+def calculate_stats(texts):
+    # Séparer les textes en une liste
+    
+
+    # Supprimer les éléments vides
+    texts = list(filter(None, texts))
+    num_texts = []
+    avg_length = []
+    # Calculer le nombre de textes
+    for x in texts : 
+        num_texts.append(verbal_richness(x))
+        avg_length.append(compute_text_metrics(lexical_richness(x),grammatical_richness(x),verbal_richness(x)))
+    # Créer un DataFrame pandas pour stocker les résultats
+    stats_df = pd.DataFrame({
+        "Nombre": num_texts,##Verbal
+        "Longueur": avg_length##Combiné et pondération
+    })
+
+    colors = plt.cm.Set1(np.linspace(0, 1, len(num_texts)))
+
+
+    fig, ax = plt.subplots()
+    for i in range(0, len(num_texts)):
+        ax.scatter(x=num_texts[i], y=avg_length[i], c=[colors[i]], label=f"Texte {i+1}")
+    ax.scatter(x=np.mean(num_texts), y=np.mean(avg_length), c="black", marker=".", s=300, label="Moyenne")
+    max_num_texts = max(num_texts)
+    min_num_texts = min(num_texts)
+    max_avg_length = max(avg_length)
+    min_avg_length = min(avg_length)
+
+    # Définir les limites du graph en utilisant les valeurs maximales et minimales
+    ax.set_xlim(min_num_texts - 0.1, max_num_texts + 0.1)
+    ax.set_ylim(min_avg_length - 0.1, max_avg_length + 0.1)
+
+
+    ax.set_xlabel("Taille du champ Verbal")
+    ax.set_ylabel("Taile de la richesse générale")
+    ax.set_title(f"Visualisation de la richesse lexicale par rapport à la richesse générale.")
+    ax.legend()
+    st.pyplot(fig)
 
 
    
@@ -352,16 +393,15 @@ elif tabs == 'StendhalGPT':
                         text_ref += pdf_reader.pages[page].extract_text()
         
 
-    if st.button('Vérifier.'):
+    if st.button('Vérifie'):
         try : 
 
             texte_metrique2 = detect_generated_text(text_ref)
             texte_metrique = detect_generated_text(text)
 
             resulabs = abs(texte_metrique2 - texte_metrique) /  texte_metrique2
-            print(resulabs)
             
-            st.markdown(f'## La différence relative entre vos textes est de :red[{round(resulabs,4)*100}]')
+            st.markdown(f'## La différence relative entre vos textes est de :red[{round(resulabs,4)*100}%.]')
 
         except:
             st.warning('Un de vos textes est trop court.')
@@ -455,7 +495,7 @@ elif tabs == 'StendhalGPT Expert':
                     try:
                         resul2 = resul.B()
                         resul2 = resul.most_common(resul2)
-                        print(resul2)
+                        #print(resul2)
 
                                             #Demander le nombre de termes pour une meilleur identification. 
                     except:
@@ -471,21 +511,14 @@ elif tabs == 'StendhalGPT Expert':
                     df = pd.DataFrame(resul2, columns=['Mots', 'Occurence'])
 
                     st.dataframe(df)
-                    #for x in resul2 : 
-                    #   words_to_highlight.append(x[0])
-                    #  bar.progress(i + 2)
-                    #words_to_highlight_reverse = list(reversed(words_to_highlight))
                     
                     plt.figure(figsize=(10,5))
                     resul.plot(30, cumulative=False)
                     bar.progress(79) 
                     st.pyplot(plt)
-                # xslider = st.slider('Sélectionner une valeur', min_value=0, max_value=len(resul2), value=4)
-                # highlighted_text = highlight_text(text, words_to_highlight[:2])
-                    #highlighted_text2 = highlight_text2(text, words_to_highlight_reverse[2:])
-                    #st.markdown("**Mots les moins cités** : \n" +str(highlighted_text2), unsafe_allow_html=True)
-                    #st.markdown("**Mots les plus cités** : \n" +str(highlighted_text), unsafe_allow_html=True)
-                    
+               
+
+
                 ##Pour le texte de Référence 
                 with col2 :
                     
@@ -522,8 +555,6 @@ elif tabs == 'StendhalGPT Expert':
                         st.warning("Votre texte est trop court.")
                      
 
-
-
                     resul = lexical_field(text_ref)
                     
                     try:
@@ -543,8 +574,6 @@ elif tabs == 'StendhalGPT Expert':
 
                     i = 34
               
-
-
                     df = pd.DataFrame(resul2, columns=['Mots', 'Occurence'])
 
                     st.dataframe(df)
@@ -582,7 +611,7 @@ elif tabs == 'StendhalGPT Expert':
                     dist = distance((x[0], y[0]), (x[1],y[1]))
                     st.markdown(f"Distance entre les points {dist}.")
                 except:
-                    st.info('Textes trop courts pour une représentation 2D.')
+                    st.info('Les textes trop courts pour une représentation 2D.')
 
                 bar.progress(100) 
             
@@ -602,7 +631,29 @@ elif tabs == 'StendhalGPT Expert':
 
                   #  st.dataframe(df)
 
-#
+
+
+elif tabs == "StendhalGPT MultipleTextes":
+
+    st.subheader("StendhalGPT MultipleTextes")
+    st.markdown("StendhalGPT MultipleTextes mesure les caractéristiques des textes fournis et les représente dans un plan bidimensionnel.")
+    st.info('StendhalGPT MultipleTextes est susceptible d\'évoluer.')
+
+
+    texte1 = st.text_input("Texte 1")
+    texte22 =st.text_input("Texte 2")
+    texte3 = st.text_input("Texte 3")
+    texte4 = st.text_input("Texte 4")
+    texte5 = st.text_input("Texte 5")
+    
+    resul = [texte1, texte22, texte3, texte4, texte5]
+
+    if st.button("Lancer l'analyse"):
+        try:
+            calculate_stats(resul)
+        except:
+            st.warning('Il y a eu une erreur dans le traitement de vos textes.')
+
 #elif tabs == "StendhalGPT FusionedText":
 #    
 #    st.subheader("StendhalGPT FusionedText")
@@ -624,12 +675,14 @@ elif tabs == 'StendhalGPT Expert':
 #        
 #    if st.button('Vérifier'):
 #
-#        anormal_bloc = measure_lexical_richness(text, ponctu)
+#        try:
+#            anormal_bloc = measure_lexical_richness(text, ponctu)
+#            highlighted_text = highlight_text(text, [word for block in anormal_bloc for word in block])
+#
+#            if anormal_bloc != []:
+#                st.markdown("**Blocs Anormaux** : \n" +str(highlighted_text), unsafe_allow_html=True)
+#            else : 
+#                st.markdown('Votre texte semble être uniforme.')
+#        except:
+#            st.warning('Un problème est survenu dans le traitement, veuillez choisir une ponctuation différente.')
 #        
-#            
-#        highlighted_text = highlight_text(text, [word for block in anormal_bloc for word in block])
-#
-#        st.markdown("**Blocs Anormaux** : \n" +str(highlighted_text), unsafe_allow_html=True)
-#
-#
-#
