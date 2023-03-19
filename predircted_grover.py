@@ -25,6 +25,8 @@ import PyPDF2
 import openai
 openai.api_key = "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"
 
+import numpy as np
+
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -344,7 +346,6 @@ with st.sidebar:
                                                      'margin-bottom': '30px',
                                                      'padding-left': '30px'}},
                              key="1")
-import numpy as np
 
 def calculate_stats(texts):
     # Séparer les textes en une liste
@@ -415,11 +416,20 @@ def scaled_manhattan_distance(a, b):
     return np.sum(np.abs(a - b)) / scale_factor
 
 def is_within_10_percent(x, y):
-    threshold = 0.2  # 10%
+    threshold = 0.2  # 20%
     difference = abs(x - y)
     avg = (x + y) / 2
     return difference <= (avg * threshold)
 
+
+def create_markdown_table(similarity_measures):
+    table_header = '| Mesure | Taux de similarité |\n'
+    table_divider = '| ------- | ---------- |\n'
+    table_rows = ''
+    for measure, similarity in similarity_measures.items():
+        table_rows += f'| {measure} | {similarity} |\n'
+    markdown_table = table_header + table_divider + table_rows
+    return markdown_table
 
 if tabs =='Quésaco ?':
     st.subheader('Quel est le principe d\'utilisation de StendhalGPT ?')
@@ -456,16 +466,22 @@ elif tabs == 'StendhalGPT':
     with col5:
 
         text = st.text_input("Insérez un/vos texte(s) référent dans cette colonne.", '')
-        print(text)
-   
+       
     
     with col6:
         nbr_mots_text = len(text.split(" "))
         #print(nbr_mots_text)
         bar.progress(0)
         text_ref = st.text_input("Insérez un descriptif de votre texte (taille, type, sujet, niveau d'études.)")
-        text_ref = generation2('Génére uniquement un text en français en respectant ces critères : '+text_ref+' en '+str(nbr_mots_text)+'nombre de mots')
-        #print(len(text_ref.split(" ")))
+        try:
+            
+            text_ref = generation2('Génére uniquement un text en français en respectant ces critères : '+text_ref+' en '+str(nbr_mots_text)+'nombre de mots')
+        except:
+            try:
+                text_ref = generation('Génére uniquement un text en français en respectant ces critères : '+text_ref+' en '+str(nbr_mots_text)+'nombre de mots')
+            except:
+                st.warning('Le service est surchargé, veuiller utiliser une autre méthode.')
+
 
     if st.button('Vérifier simplement'):
             
@@ -495,7 +511,7 @@ elif tabs == 'StendhalGPT':
             elif is_within_10_percent(resul,2) == True :
                 st.markdown('Il est sûr que votre texte a été généré.')
             else:
-                st.markdown('Votre texte est probable que votre texte a été généré.')
+                st.markdown('Il est probable que votre texte a été généré.')
 
         except:
            st.warning('Un problème est survenu, réessayez ou utilisez un autre module.')
@@ -515,13 +531,14 @@ elif tabs == 'StendhalGPT Expert':
                 for page in range(len(pdf_reader.pages)):
                     text += pdf_reader.pages[page].extract_text()
 
- 
+
     
     with col4:
         
         text_ref = st.text_input("Insérez un/vos textes suspects/ à comparaître dans cette colonne", '')
         pdf_file = st.file_uploader("Télécharger plusieurs textes à comparer au format PDF", type="pdf", accept_multiple_files=True)
-   
+     
+
         if pdf_file is not None:
             for pdf_fil in pdf_file:
             # Lecture du texte de chaque fichier PDF
@@ -539,6 +556,9 @@ elif tabs == 'StendhalGPT Expert':
 
 
                     try :
+
+                        resultatç = lexical_richness_normalized(text, text_ref)
+
                         richesse_gram = round(grammatical_richness(text),4)
                         richesse_detect = detect_generated_text(text)
 
@@ -614,17 +634,13 @@ elif tabs == 'StendhalGPT Expert':
 
                         compteur_mots = count_words(text_ref)
                         nrb = count_characters(text_ref)
-                        
-                        
                         richesse_detect2 = detect_generated_text(text_ref)
 
-                            
                         st.markdown("### Résultat sur le taux moyen lexical pour le(s) texte(s) à comparaître.")
                         st.markdown(f"Taux correspondant au taux lexical de votre texte(s) : **{richesse_lex2}** ")
                         st.markdown(f"Taux correspondant au taux grammatical de votre texte(s) : **{richesse_gram2}** ")
                         st.markdown(f"Taux correspondant au taux verbal de votre texte(s) : **{richesse_verbale2}** ") 
                         st.markdown(f"Nombre de mots : **{compteur_mots}** ")   
-
 
                         st.markdown(f"Nombre de caractères: **{nrb}** ")  
 
@@ -640,20 +656,17 @@ elif tabs == 'StendhalGPT Expert':
                     try:
                         resul2 = resul.B()
                         resul2 = resul.most_common(resul2)
-                        
-
-                                            #Demander le nombre de termes pour une meilleur identification. 
                     except:
                         try:
                             resul2 = resul.B()
                             resul2 = resul.most_common(resul2)
-                            print(resul2)
+                            #print(resul2)
 
                         except:
                                 st.warning('Votre texte est trop court.')
 
                     i = 34
-              
+
                     df = pd.DataFrame(resul2, columns=['Mots', 'Occurence'])
 
                     st.dataframe(df)
@@ -662,11 +675,14 @@ elif tabs == 'StendhalGPT Expert':
                     bar.progress(79) 
                     st.pyplot(plt)
 
-              
-
                 # Liste des coordonnées x et y des points à afficher
 
                 try : 
+                    reul = lexical_richness_normalized(text, text_ref)
+
+                    reul = create_markdown_table(reul)
+                    st.markdown(reul)
+
                     x = [richesse_lex, richesse_lex2]
                     y = [richesse_gram/richesse_verbale, richesse_gram2/richesse_verbale2]
                         
@@ -688,9 +704,7 @@ elif tabs == 'StendhalGPT Expert':
                     st.info('Les textes trop courts pour une représentation 2D.')
 
                 bar.progress(100) 
-          
-
-
+            
 
 elif tabs == "StendhalGPT MultipleTextes":
 
@@ -713,3 +727,35 @@ elif tabs == "StendhalGPT MultipleTextes":
         except:
             st.warning('Il y a eu une erreur dans le traitement de vos textes.')
 
+#elif tabs == "StendhalGPT FusionedText":
+#    
+#    st.subheader("StendhalGPT FusionedText")
+#    st.markdown("StendhalGPT tente d'identifier les parties du texte qui peuvent être générées et intégrées dans le corpus en repérant des données statistiques anormales par rapport à tout le texte complet. Les phrases surlignées en rouge, possèdent des statistiques en dehors de l'écart type de la moyenne de tout le texte.")
+#    st.info('StendhalGPT FusionedText est susceptible d\'évoluer.')
+#    text = st.text_input("Entrez votre texte ici.")
+#    ponctu = st.radio(
+#        "Sélectionnez une ponctuation pour partitionner votre texte",
+#        key="visibility",
+#        options=["Espace", "Point", "Virgule"],
+#    )
+#    if ponctu == 'Espace':
+#        ponctu = ' '
+#    elif ponctu == 'Point':
+#        ponctu = '.'
+#    else :
+#        ponctu = ","
+#
+#        
+#    if st.button('Vérifier'):
+#
+#        try:
+#            anormal_bloc = measure_lexical_richness(text, ponctu)
+#            highlighted_text = highlight_text(text, [word for block in anormal_bloc for word in block])
+#
+#            if anormal_bloc != []:
+#                st.markdown("**Blocs Anormaux** : \n" +str(highlighted_text), unsafe_allow_html=True)
+#            else : 
+#                st.markdown('Votre texte semble être uniforme.')
+#        except:
+#            st.warning('Un problème est survenu dans le traitement, veuillez choisir une ponctuation différente.')
+#        
