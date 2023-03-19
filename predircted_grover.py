@@ -9,7 +9,6 @@ import re
 
 import statistics
 
-import altair as alt
 
 from nltk import bigrams
 from collections import Counter
@@ -21,8 +20,10 @@ import language_tool_python
 
 import PyPDF2
 #import docx2txt
-from nltk import ngrams
-from collections import defaultdict
+
+
+import openai
+openai.api_key = "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"
 
 
 import pandas as pd
@@ -30,14 +31,13 @@ import matplotlib.pyplot as plt
 from nltk.tokenize import word_tokenize
 from nltk.tag import pos_tag
 
-from nltk.util import ngrams
 from nltk.probability import *
 
 from math import sqrt
 
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('averaged_perceptron_tagger')
+#nltk.download('punkt')
+#nltk.download('stopwords')
+#nltk.download('averaged_perceptron_tagger')
 
 stop_words = set(stopwords.words('french'))
 from st_on_hover_tabs import on_hover_tabs
@@ -48,6 +48,34 @@ st.title('StendhalGPT')
 
 bar = st.progress(0)
 
+def generation2(thm):
+    result = ''
+    bar.progress(32)
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+                {"role": "system", "content": "You are a chatbot"},
+                {"role": "user", "content": f"écris moi uniquement un texte suivant ces paramètres {thm}"},
+            ]
+    )
+    bar.progress(89)
+    for choice in response.choices:
+        result += choice.message.content + '\n'
+    return result
+
+def generation(thm):
+    
+    bar.progress(32)
+    openai.api_key = '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'
+    response = openai.Completion.create(
+    model="text-davinci-003",
+    prompt=thm,
+    max_tokens=2048,
+    temperature=0
+        )
+    bar.progress(80)
+    answer = response.choices[0].text
+    return answer
 
 
 def grammatical_richness(text):
@@ -88,8 +116,7 @@ def lexical_field(text):
 def lexical_richness(text):
     # Tokenization du texte
     words = nltk.word_tokenize(text)
-    stop_words = set(stopwords.words("french") + list(string.punctuation))
-
+    
     # Calcul de l'étendue du champ lexical
     type_token_ratio = len(set(words)) / len(words)
     return type_token_ratio
@@ -118,7 +145,10 @@ def highlight_text(text, words_to_highlight):
 
     
 
+
 def compare_markov_model(text1, text2):
+    global prob1
+    global prob2
     # tokenize les deux textes
     tokens1 = nltk.word_tokenize(text1)
     tokens2 = nltk.word_tokenize(text2)
@@ -130,15 +160,23 @@ def compare_markov_model(text1, text2):
     # compter le nombre d'occurences de chaque bigramme
     count1 = Counter(bigrams1)
     count2 = Counter(bigrams2)
-
+ 
     # mesurer la probabilité de transition pour chaque bigramme dans les deux textes
     prob1 = {bigram: count/len(bigrams1) for bigram, count in count1.items()}
     prob2 = {bigram: count/len(bigrams2) for bigram, count in count2.items()}
 
-    # mesurer la différence entre les deux probabilités pour chaque bigramme
-    diff = {bigram: abs(prob1[bigram] - prob2[bigram]) for bigram in prob1.keys() & prob2.keys()}
 
-    return diff
+    common_bigrams = set(count1.keys()) & set(count2.keys())
+    # Obtenir les probabilités pour chaque bigramme commun
+    prob1 = {bigram: count1[bigram] / sum(count1.values()) for bigram in common_bigrams}
+    prob2 = {bigram: count2[bigram] / sum(count2.values()) for bigram in common_bigrams}
+    
+    
+    # mesurer la différence entre les deux probabilités pour chaque bigramme
+    #diff = {bigram: abs(prob1[bigram] - prob2[bigram]) for bigram in prob1.keys() & prob2.keys()}
+
+    return [prob1, prob2]
+
 
 
 def count_words(text):
@@ -150,7 +188,7 @@ def compute_text_metrics(lexical_density,grammatical_density,verbal_density):
     # Ajuster les pondérations pour donner plus de poids au taux verbal
     lexical_weight = 0.25
     grammatical_weight = 0.55
-    verbal_weight = 1.5
+    verbal_weight = 1.75
     
     # Calculer la mesure agrégée en combinant les trois taux avec des pondérations ajustées
     text_metric = (lexical_weight * lexical_density) + (grammatical_weight * grammatical_density) + (verbal_weight * verbal_density)
@@ -242,7 +280,39 @@ def detect_generated_text(text):
     weighted_score = total_weight + score
     
     return weighted_score
+import string
 
+def lexical_richness_normalized(text1, text2):
+    # Tokenization
+    tokens1 = nltk.word_tokenize(text1)
+    tokens2 = nltk.word_tokenize(text2)
+    
+    # Removing punctuation
+    table = str.maketrans('', '', string.punctuation)
+    tokens1 = [w.translate(table) for w in tokens1]
+    tokens2 = [w.translate(table) for w in tokens2]
+    
+    # Number of unique words
+    unique1 = len(set(tokens1))
+    unique2 = len(set(tokens2))
+    
+    # Total number of words
+    total1 = len(tokens1)
+    total2 = len(tokens2)
+    
+    # Type-token ratio
+    ttr1 = unique1 / total1
+    ttr2 = unique2 / total2
+    
+    # Measure of Textual Lexical Diversity
+    mtd1 = len(set(tokens1)) / len(tokens1)
+    mtd2 = len(set(tokens2)) / len(tokens2)
+    
+    # Return normalized values in a dictionary
+    return {'unique_words_ratio': (unique1 / unique2) if unique2 > 0 else 0,
+            'total_words_ratio': (total1 / total2) if total2 > 0 else 0,
+            'ttr_ratio': ttr1 / ttr2 if ttr2 > 0 else 0,
+            'mtd_ratio': mtd1 / mtd2 if mtd2 > 0 else 0}
 
 
 
@@ -311,14 +381,44 @@ def calculate_stats(texts):
     ax.set_ylim(min_avg_length - 0.1, max_avg_length + 0.1)
 
 
-    ax.set_xlabel("Taille du champ Verbal")
-    ax.set_ylabel("Taile de la richesse générale")
+    ax.set_xlabel("Taille du champ verbal")
+    ax.set_ylabel("Taille de la richesse générale")
     ax.set_title(f"Visualisation de la richesse lexicale par rapport à la richesse générale.")
     ax.legend()
     st.pyplot(fig)
 
 
-   
+
+def kl_div_with_exponential_transform(mat1, mat2, alpha):
+    # Transform matrices
+    mat1_transformed = np.exp(alpha * mat1)
+    mat2_transformed = np.exp(alpha * mat2)
+    
+    # Normalize matrices
+    mat1_normalized = mat1_transformed / np.sum(mat1_transformed, keepdims=True)
+    mat2_normalized = mat2_transformed / np.sum(mat2_transformed, keepdims=True)
+    
+    # Calculate KL divergence
+    kl_div = np.sum(mat1_normalized * np.log(mat1_normalized / mat2_normalized))
+    
+    return kl_div
+
+
+def shifted_exp(x, shift=0):
+    return 1+(1 / ((x - shift)**10))
+
+
+
+
+def scaled_manhattan_distance(a, b):
+    scale_factor = sum(a.shape) + sum(b.shape)
+    return np.sum(np.abs(a - b)) / scale_factor
+
+def is_within_10_percent(x, y):
+    threshold = 0.2  # 10%
+    difference = abs(x - y)
+    avg = (x + y) / 2
+    return difference <= (avg * threshold)
 
 
 if tabs =='Quésaco ?':
@@ -350,61 +450,55 @@ if tabs =='Quésaco ?':
    # st.markdown("La comparaison des résultats des modèles de Markov peut aider à déterminer si un texte a été généré par une IA ou non. Une différence significative entre les résultats peut indiquer que le texte a été généré par une IA. En effet, les modèles de Markov mesurent la probabilité de transition entre les mots dans un texte, et les textes générés par une IA ont souvent des transitions différentes de celles des textes réels. Par conséquent, si la différence entre les résultats des modèles est importante, cela peut suggérer que le texte a été généré par une IA plutôt que par un être humain.")
         
 elif tabs == 'StendhalGPT':
+
+    st.info('En dessous de 130 mots, il est préférable d\'utiliser la fonction Expert. ')
     
     with col5:
 
         text = st.text_input("Insérez un/vos texte(s) référent dans cette colonne.", '')
-        pdf_file2 = st.file_uploader("Télécharger plusieurs textes de référence au format PDF", type="pdf", accept_multiple_files=True)
-
-        if pdf_file2 is not None:
-            for pdf_fil2 in pdf_file2:
-                # Lecture du texte de chaque fichier PDF
-                pdf_reader = PyPDF2.PdfReader(pdf_fil2)
-                for page in range(len(pdf_reader.pages)):
-                    text += pdf_reader.pages[page].extract_text()
-
-        # Ajout du widget pour télécharger plusieurs fichiers DOCX
-        #docx_files = st.file_uploader("Télécharger plusieurs textes de référence au format DOCX", type="docx", accept_multiple_files=True)
-
-        #if docx_files is not None:
-         #   for docx_file in docx_files:
-                # Lecture du texte de chaque fichier DOCX
-          #      text_ref += docx2txt.process(docx_file)
-
+        print(text)
+   
     
     with col6:
-        
-        text_ref = st.text_input("Insérez un/vos textes suspects/ à comparaître dans cette colonne", '')
-        pdf_file = st.file_uploader("Télécharger plusieurs textes à comparer au format PDF", type="pdf", accept_multiple_files=True)
-       # docx_file2s = st.file_uploader("Télécharger plusieurs textes à comparer au format DOCX", type="docx", accept_multiple_files=True)
+        nbr_mots_text = len(text.split(" "))
+        #print(nbr_mots_text)
+        bar.progress(0)
+        text_ref = st.text_input("Insérez un descriptif de votre texte (taille, type, sujet, niveau d'études.)")
+        text_ref = generation2('Génére uniquement un text en français en respectant ces critères : '+text_ref+' en '+str(nbr_mots_text)+'nombre de mots')
+        #print(len(text_ref.split(" ")))
 
-        #if docx_file2s is not None:
-         #   for docx_file2 in docx_file2s:
-                # Lecture du texte de chaque fichier DOCX
-          #      text += docx2txt.process(docx_file2)
-
-
-        if pdf_file is not None:
-            for pdf_fil in pdf_file:
-            # Lecture du texte de chaque fichier PDF
-                pdf_reader = PyPDF2.PdfReader(pdf_fil)
-                
-                for page in range(len(pdf_reader.pages)):
-                        text_ref += pdf_reader.pages[page].extract_text()
-        
-
-    if st.button('Vérifie'):
-        try : 
-
-            texte_metrique2 = detect_generated_text(text_ref)
-            texte_metrique = detect_generated_text(text)
-
-            resulabs = abs(texte_metrique2 - texte_metrique) /  texte_metrique2
+    if st.button('Vérifier simplement'):
             
-            st.markdown(f'## La différence relative entre vos textes est de :red[{round(resulabs,4)*100}%.]')
+        try : 
+            diff = compare_markov_model(text, text_ref)
+            vec1 = np.array([diff[0][bigram] for bigram in prob1] +[verbal_richness(text)]+[grammatical_richness(text)]+[lexical_richness(text)] )
+            vec2 = np.array([diff[1][bigram] for bigram in prob2] +[verbal_richness(text_ref)]+[grammatical_richness(text_ref)]+[lexical_richness(text_ref)])
+                        
+            x = len(vec1)
+
+            moye = shifted_exp(x)
+            A = vec1
+            B= vec2
+            distance = np.sqrt(np.sum((A - B) ** 2))
+
+           # print('manhttan distance', scaled_manhattan_distance(vec1, vec2))
+            #print("kl distance",kl_div_with_exponential_transform(A,B,moye))
+
+            resul = (1/distance)/x
+            #print("Distance euclidienne :", (1/distance)/x)
+            bar.progress(100)
+
+            st.markdown(f'La distance euclidienne relatuve est de :red[{round((resul),4)}.]')
+        
+            if resul > 1 or is_within_10_percent(0.96,resul) == True :
+                st.markdown('Il semblerait que votre a été écrit par un humain.')
+            elif is_within_10_percent(resul,2) == True :
+                st.markdown('Il est sûr que votre texte a été généré.')
+            else:
+                st.markdown('Votre texte est probable que votre texte a été généré.')
 
         except:
-            st.warning('Un de vos textes est trop court.')
+           st.warning('Un problème est survenu, réessayez ou utilisez un autre module.')
 
 
 elif tabs == 'StendhalGPT Expert':
@@ -421,27 +515,13 @@ elif tabs == 'StendhalGPT Expert':
                 for page in range(len(pdf_reader.pages)):
                     text += pdf_reader.pages[page].extract_text()
 
-        # Ajout du widget pour télécharger plusieurs fichiers DOCX
-        #docx_files = st.file_uploader("Télécharger plusieurs textes de référence au format DOCX", type="docx", accept_multiple_files=True)
-
-        #if docx_files is not None:
-         #   for docx_file in docx_files:
-                # Lecture du texte de chaque fichier DOCX
-          #      text_ref += docx2txt.process(docx_file)
-
+ 
     
     with col4:
         
         text_ref = st.text_input("Insérez un/vos textes suspects/ à comparaître dans cette colonne", '')
         pdf_file = st.file_uploader("Télécharger plusieurs textes à comparer au format PDF", type="pdf", accept_multiple_files=True)
-       # docx_file2s = st.file_uploader("Télécharger plusieurs textes à comparer au format DOCX", type="docx", accept_multiple_files=True)
-
-        #if docx_file2s is not None:
-         #   for docx_file2 in docx_file2s:
-                # Lecture du texte de chaque fichier DOCX
-          #      text += docx2txt.process(docx_file2)
-
-
+   
         if pdf_file is not None:
             for pdf_fil in pdf_file:
             # Lecture du texte de chaque fichier PDF
@@ -451,7 +531,7 @@ elif tabs == 'StendhalGPT Expert':
                         text_ref += pdf_reader.pages[page].extract_text()
         
 
-    if st.button('Vérification via le taux lexical.'): #intégrer le texte de référence pour plus de rapidité 
+    if st.button('Vérifier'): #intégrer le texte de référence pour plus de rapidité 
         if text == '' or text_ref=='':
             st.warning("Veuillez indiquer votre texte.")
         else:
@@ -582,13 +662,7 @@ elif tabs == 'StendhalGPT Expert':
                     bar.progress(79) 
                     st.pyplot(plt)
 
-                # yslider = st.slider('Sélectionner une valeur', min_value=0, max_value=len(resul2), value=4,)  #Doit quand modifier remettre à jour le texte surligné
-
-                    #highlighted_text = highlight_text(text, words_to_highlight[:4])
-                    #highlighted_text2 = highlight_text2(text, words_to_highlight_reverse[4:])
-                    #st.markdown("**Mots les moins cités** : \n" +str(highlighted_text2), unsafe_allow_html=True)
-                    #st.markdown("**Mots les plus cités** : \n" +str(highlighted_text), unsafe_allow_html=True)
-                    
+              
 
                 # Liste des coordonnées x et y des points à afficher
 
@@ -614,22 +688,7 @@ elif tabs == 'StendhalGPT Expert':
                     st.info('Les textes trop courts pour une représentation 2D.')
 
                 bar.progress(100) 
-            
-
-
-
-                #if st.button('Vérifier via le modèle de Markov.'):
-                 #   resultat  = compare_markov_model(text, text_ref)
-                 #   key_list = []
-                 #   value_list = []
-                 #   for key, value in resultat.items():
-                 #       key_list.append(key)
-                 #       value_list.append(value)
-                 #   df = pd.DataFrame(list(zip(key_list,value_list)), columns = ['Texte','Probabilité'])
-
-                #convertion du dictionnaire en dataframe
-
-                  #  st.dataframe(df)
+          
 
 
 
@@ -654,35 +713,3 @@ elif tabs == "StendhalGPT MultipleTextes":
         except:
             st.warning('Il y a eu une erreur dans le traitement de vos textes.')
 
-#elif tabs == "StendhalGPT FusionedText":
-#    
-#    st.subheader("StendhalGPT FusionedText")
-#    st.markdown("StendhalGPT tente d'identifier les parties du texte qui peuvent être générées et intégrées dans le corpus en repérant des données statistiques anormales par rapport à tout le texte complet. Les phrases surlignées en rouge, possèdent des statistiques en dehors de l'écart type de la moyenne de tout le texte.")
-#    st.info('StendhalGPT FusionedText est susceptible d\'évoluer.')
-#    text = st.text_input("Entrez votre texte ici.")
-#    ponctu = st.radio(
-#        "Sélectionnez une ponctuation pour partitionner votre texte",
-#        key="visibility",
-#        options=["Espace", "Point", "Virgule"],
-#    )
-#    if ponctu == 'Espace':
-#        ponctu = ' '
-#    elif ponctu == 'Point':
-#        ponctu = '.'
-#    else :
-#        ponctu = ","
-#
-#        
-#    if st.button('Vérifier'):
-#
-#        try:
-#            anormal_bloc = measure_lexical_richness(text, ponctu)
-#            highlighted_text = highlight_text(text, [word for block in anormal_bloc for word in block])
-#
-#            if anormal_bloc != []:
-#                st.markdown("**Blocs Anormaux** : \n" +str(highlighted_text), unsafe_allow_html=True)
-#            else : 
-#                st.markdown('Votre texte semble être uniforme.')
-#        except:
-#            st.warning('Un problème est survenu dans le traitement, veuillez choisir une ponctuation différente.')
-#        
