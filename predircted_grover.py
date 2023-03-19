@@ -416,7 +416,7 @@ def scaled_manhattan_distance(a, b):
     return np.sum(np.abs(a - b)) / scale_factor
 
 def is_within_10_percent(x, y):
-    threshold = 0.2  # 20%
+    threshold = 0.29  # 29%
     difference = abs(x - y)
     avg = (x + y) / 2
     return difference <= (avg * threshold)
