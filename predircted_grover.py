@@ -329,8 +329,8 @@ col1, col2 = st.columns(2)
 
 
 with st.sidebar:
-        tabs = on_hover_tabs(tabName=['Quésaco ?','StendhalGPT', 'StendhalGPT Expert', 'StendhalGPT MultipleTextes'], 
-                             iconName=['help center','home',  'toll', 'analytics'],
+        tabs = on_hover_tabs(tabName=['Accueil','StendhalGPT', 'StendhalGPT Expert', 'StendhalGPT MultipleTextes'], 
+                             iconName=['dashboard','home',  'toll', 'analytics'],
                              styles = {'navtab': {'background-color':'#FFFFFF',
                                                   'color': '#000000',
                                                   'font-size': '18px',
@@ -431,37 +431,33 @@ def create_markdown_table(similarity_measures):
     markdown_table = table_header + table_divider + table_rows
     return markdown_table
 
-if tabs =='Quésaco ?':
-    st.subheader('Quel est le principe d\'utilisation de StendhalGPT ?')
+if tabs == 'Accueil':
+    st.info('Si vous rencontrez des difficultés, vous pouvez nous contacter dans la page Contact de notre site.')
 
-    st.markdown("Nous avons conçu l\'application afin de permettre à ses utilisateurs de justifier ou de mesurer des anomalies dans des textes suspects. Nous appelons 'anomalies' des caractéristiques propres à une génération par une intelligence artificielle ou par des LLMs, et qui caractérisent un textes générés plutôt qu'un texte écrit par un étudiant, c'est à dire un très grand vocabulaire, de très bons taux lexicaux et verbaux, en comparaison avec des copies 'similaires' dans leur exercice de conception.")
-
-    st.subheader('Comment tout cela fonctionne ?') 
-
-    st.markdown("Pour une analyse précise, il est conseillé d'utiliser un ensemble de textes identiques pour les comparer et détecter les anomalies dans les textes générés. Nous travaillons sur des solutions automatiques pour cette comparaison. Si une copie obtient des résultats incohérents, elle sera considérée comme suspecte et pourra être identifiée comme générée si l\'étude des statistiques révèle des résultats trop aléatoires.")
-
-    #st.subheader("Comment fonctionne le taux lexical ?")
-    #st.caption(r"La richesse lexicale est cruciale dans la reconnaissance de textes générés par l'IA. Elle se réfère à la variété et à la quantité de mots utilisés dans un texte, qui peuvent influencer la compréhension et l'analyse du contenu par un système informatique. Une richesse lexicale élevée peut aider à améliorer la précision de la reconnaissance de textes générés par l'IA. Cependant, il est important de ne pas confondre richesse lexicale et complexité, car un texte peut être riche en termes de vocabulaire sans pour autant être complexe. En mesurant la richesse lexicale des textes générés par l'IA, nous pouvons améliorer la qualité des analyses et des prédictions effectuées par les modèles. ")
-        
-    st.subheader('L\'indicateur de richesse générale') 
-
-    st.markdown('L\'indicateur de richesse lexcicale est le résultat de la mesure agrégée entre la richesse lexicale, verbale, et grammaticale avec des pondérations ajustées afin de mesurer plus justement la richesse lexicale du\'texte. Plus cet indicateur est élevé plus celui-ci est riche. ')
-
-    st.subheader('L\'indicateur de richesse modale') 
-
-    st.markdown('L\'indicateur de richesse modale mesure la richesse d\'un texte en fonction de la fréquence d\'apparitions des mots dans un corpus en donnant plus de poids aux textes contenant beaucoup de mots peu utilisés. Plus un texte contient une grande diversité de mots avec une faible fréquence plus celui-ci aura un poids beaucoup plus important.')
-
-    st.subheader('La différence relative')
-
-    st.markdown('La différence relative permet de mettre en évidence les différences significatives entre deux textes. Plus cet indicateur est élevé plus celui-ci indique que les textes sont significativement différents les uns des autres. ')
+    st.markdown("Chers établissements scolaires et entreprises,\
+\n \nNous sommes heureux de vous présenter notre solution innovante, l'application de détection de textes générés. Notre application utilise des algorithmes avancés pour analyser les textes et déterminer s'ils ont été produits de manière automatique ou par des êtres humains.\
+\
+\n \nEn effet, les textes générés peuvent être un véritable défi pour les enseignants et les employeurs. Il est souvent difficile de distinguer les textes produits par des individus de ceux générés par des programmes automatisés. C'est là que notre application est utile. En identifiant les différences subtiles entre les deux types de textes, notre application offre une solution efficace pour lutter contre la fraude académique et la contrefaçon dans les entreprises.\
+\
+\n \nNotre application peut aider les établissements scolaires à garantir l'intégrité académique, en empêchant les étudiants de tricher en utilisant des textes générés. Les employeurs peuvent également bénéficier de notre technologie en détectant rapidement les contrefaçons et en protégeant leurs propriétés intellectuelles.\
+\
+\n \nSi vous êtes intéressé par notre solution, nous serions ravis de discuter de la mise en place de notre application dans votre établissement ou entreprise. Nous sommes impatients de vous aider à maintenir un environnement de travail et d'apprentissage juste et équitable.\
+\
+\n \nMerci de votre intérêt pour notre application de détection de textes générés. Nous sommes convaincus que notre technologie de pointe sera d'une grande valeur pour votre institution.\
+\
+\n \nCordialement,\
+ \nStendhalGPT")
 
 
-   ## st.subheader("Comment fonctionne la comparaison de deux modèles de Markov ?")
-   # st.markdown("La comparaison des résultats des modèles de Markov peut aider à déterminer si un texte a été généré par une IA ou non. Une différence significative entre les résultats peut indiquer que le texte a été généré par une IA. En effet, les modèles de Markov mesurent la probabilité de transition entre les mots dans un texte, et les textes générés par une IA ont souvent des transitions différentes de celles des textes réels. Par conséquent, si la différence entre les résultats des modèles est importante, cela peut suggérer que le texte a été généré par une IA plutôt que par un être humain.")
-        
+    st.markdown('[Cliquez ici](https://www.stendhalgpt.fr/newsletter/) pour vous inscrire à la newsletter.')
+    st.markdown('[Cliquez ici](https://www.stendhalgpt.fr/docs-category/doc/) pour accéder à la documentation.')
+
+    st.caption('version 0.5.3')
+
 elif tabs == 'StendhalGPT':
 
     st.info('En dessous de 130 mots, il est préférable d\'utiliser la fonction Expert. ')
+   
     
     with col5:
 
@@ -518,6 +514,7 @@ elif tabs == 'StendhalGPT':
 
 
 elif tabs == 'StendhalGPT Expert':
+    st.info('Vous utilisez actuellement StendhalGPT Expert')
 
     with col3:
 
