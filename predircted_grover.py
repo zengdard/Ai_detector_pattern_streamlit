@@ -503,7 +503,7 @@ elif tabs == 'StendhalGPT':
             st.markdown(f'La distance euclidienne relatuve est de :red[{round((resul),4)}.]')
         
             if resul > 1 or is_within_10_percent(0.96,resul) == True :
-                st.markdown('Il semblerait que votre a été écrit par un humain.')
+                st.markdown('Il semblerait que votre texte a été écrit par un humain.')
             elif is_within_10_percent(resul,2) == True :
                 st.markdown('Il est sûr que votre texte a été généré.')
             else:
