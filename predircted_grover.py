@@ -329,7 +329,7 @@ col1, col2 = st.columns(2)
 
 
 with st.sidebar:
-        tabs = on_hover_tabs(tabName=['Accueil','StendhalGPT', 'StendhalGPT Expert', 'StendhalGPT MultipleTextes'], 
+        tabs = on_hover_tabs(tabName=['Home','StendhalGPT', 'StendhalGPT Expert', 'StendhalGPT MultipleTextes'], 
                              iconName=['dashboard','home',  'toll', 'analytics'],
                              styles = {'navtab': {'background-color':'#FFFFFF',
                                                   'color': '#000000',
@@ -382,9 +382,9 @@ def calculate_stats(texts):
     ax.set_ylim(min_avg_length - 0.1, max_avg_length + 0.1)
 
 
-    ax.set_xlabel("Taille du champ verbal")
-    ax.set_ylabel("Taille de la richesse générale")
-    ax.set_title(f"Visualisation de la richesse lexicale par rapport à la richesse générale.")
+    ax.set_xlabel("Verbal Field Size")
+    ax.set_ylabel("Size of overall wealth")
+    ax.set_title(f"Visualization of lexical wealth in relation to general wealth.")
     ax.legend()
     st.pyplot(fig)
 
@@ -432,51 +432,37 @@ def create_markdown_table(similarity_measures):
     return markdown_table
 
 if tabs == 'Accueil':
-    st.info('Si vous rencontrez des difficultés, vous pouvez nous contacter dans la page Contact de notre site.')
-
-    st.markdown("Chers établissements scolaires et entreprises,\
-\n \nNous sommes heureux de vous présenter notre solution innovante, l'application de détection de textes générés. Notre application utilise des algorithmes avancés pour analyser les textes et déterminer s'ils ont été produits de manière automatique ou par des êtres humains.\
-\
-\n \nEn effet, les textes générés peuvent être un véritable défi pour les enseignants et les employeurs. Il est souvent difficile de distinguer les textes produits par des individus de ceux générés par des programmes automatisés. C'est là que notre application est utile. En identifiant les différences subtiles entre les deux types de textes, notre application offre une solution efficace pour lutter contre la fraude académique et la contrefaçon dans les entreprises.\
-\
-\n \nNotre application peut aider les établissements scolaires à garantir l'intégrité académique, en empêchant les étudiants de tricher en utilisant des textes générés. Les employeurs peuvent également bénéficier de notre technologie en détectant rapidement les contrefaçons et en protégeant leurs propriétés intellectuelles.\
-\
-\n \nSi vous êtes intéressé par notre solution, nous serions ravis de discuter de la mise en place de notre application dans votre établissement ou entreprise. Nous sommes impatients de vous aider à maintenir un environnement de travail et d'apprentissage juste et équitable.\
-\
-\n \nMerci de votre intérêt pour notre application de détection de textes générés. Nous sommes convaincus que notre technologie de pointe sera d'une grande valeur pour votre institution.\
-\
-\n \nCordialement,\
- \nStendhalGPT")
+    st.info('If you encounter difficulties, you can contact us on the Contact page of our site.')
 
 
-    st.markdown('[Cliquez ici](https://www.stendhalgpt.fr/newsletter/) pour vous inscrire à la newsletter.')
-    st.markdown('[Cliquez ici](https://www.stendhalgpt.fr/docs-category/doc/) pour accéder à la documentation.')
+    st.markdown('[Cliquez ici](https://www.stendhalgpt.fr/newsletter/) to subscribe to the newsletter.')
+    st.markdown('[Cliquez ici](https://www.stendhalgpt.fr/docs-category/doc/) to access the documentation.')
 
     st.caption('version 0.5.3')
 
 elif tabs == 'StendhalGPT':
 
-    st.info('En dessous de 130 mots, il est préférable d\'utiliser la fonction Expert. ')
+    st.info('Below 130 words, it is best to use the Expert function. ')
    
     
     with col5:
 
-        text = st.text_input("Insérez un/vos texte(s) référent dans cette colonne.", '')
+        text = st.text_input("Insert a referent text(s) in this column.", '')
        
     
     with col6:
         nbr_mots_text = len(text.split(" "))
         #print(nbr_mots_text)
         bar.progress(0)
-        text_ref = st.text_input("Insérez un descriptif de votre texte (taille, type, sujet, niveau d'études.)")
+        text_ref = st.text_input("Insert a description of your text (size, type, subject, level of study.)")
         try:
             
-            text_ref = generation2('Génére uniquement un text en français en respectant ces critères : '+text_ref+' en '+str(nbr_mots_text)+'nombre de mots')
+            text_ref = generation2('Génére uniquement un text en respectant ces critères : '+text_ref+' en '+str(nbr_mots_text)+'nombre de mots')
         except:
             try:
-                text_ref = generation('Génére uniquement un text en français en respectant ces critères : '+text_ref+' en '+str(nbr_mots_text)+'nombre de mots')
+                text_ref = generation('Génére uniquement un text en respectant ces critères : '+text_ref+' en '+str(nbr_mots_text)+'nombre de mots')
             except:
-                st.warning('Le service est surchargé, veuiller utiliser une autre méthode.')
+                st.warning('The service is overloaded, want to use another method.')
 
 
     if st.button('Vérifier simplement'):
@@ -500,17 +486,17 @@ elif tabs == 'StendhalGPT':
             #print("Distance euclidienne :", (1/distance)/x)
             bar.progress(100)
 
-            st.markdown(f'La distance euclidienne relatuve est de :red[{round((resul),4)}.]')
+            st.markdown(f'The relative Euclidean distance is :red[{round((resul),4)}.]')
         
             if resul > 1 or is_within_10_percent(0.96,resul) == True :
-                st.markdown('Il semblerait que votre texte a été écrit par un humain.')
+                st.markdown('It seems your text was written by a human.')
             elif is_within_10_percent(resul,2) == True :
-                st.markdown('Il est sûr que votre texte a été généré.')
+                st.markdown('It is certain that your text has been generated.')
             else:
-                st.markdown('Il est probable que votre texte a été généré.')
+                st.markdown('It is likely that your text has been generated.')
 
         except:
-           st.warning('Un problème est survenu, réessayez ou utilisez un autre module.')
+           st.warning('A problem has occurred, try again or use another module.')
 
 
 elif tabs == 'StendhalGPT Expert':
@@ -518,8 +504,8 @@ elif tabs == 'StendhalGPT Expert':
 
     with col3:
 
-        text = st.text_input("Insérez un/vos texte(s) référent dans cette colonne.", '')
-        pdf_file2 = st.file_uploader("Télécharger plusieurs textes de référence au format PDF", type="pdf", accept_multiple_files=True)
+        text = st.text_input("Insert a referent text(s) in this column.", '')
+        pdf_file2 = st.file_uploader("Download several reference texts in PDF format", type="pdf", accept_multiple_files=True)
 
         if pdf_file2 is not None:
             for pdf_fil2 in pdf_file2:
@@ -532,8 +518,8 @@ elif tabs == 'StendhalGPT Expert':
     
     with col4:
         
-        text_ref = st.text_input("Insérez un/vos textes suspects/ à comparaître dans cette colonne", '')
-        pdf_file = st.file_uploader("Télécharger plusieurs textes à comparer au format PDF", type="pdf", accept_multiple_files=True)
+        text_ref = st.text_input("Insert one/your suspicious texts/ to appear in this column", '')
+        pdf_file = st.file_uploader("Download several texts to compare in PDF format", type="pdf", accept_multiple_files=True)
      
 
         if pdf_file is not None:
@@ -547,7 +533,7 @@ elif tabs == 'StendhalGPT Expert':
 
     if st.button('Vérifier'): #intégrer le texte de référence pour plus de rapidité 
         if text == '' or text_ref=='':
-            st.warning("Veuillez indiquer votre texte.")
+            st.warning("Please indicate your text.")
         else:
                 with col1:
 
@@ -568,18 +554,18 @@ elif tabs == 'StendhalGPT Expert':
 
                         nrb = count_characters(text)
 
-                        st.markdown("### Résultat sur le taux moyen lexical pour le(s) texte(s) référent.")
-                        st.markdown(f"Taux correspondant au taux lexical de votre texte(s) : **{richesse_lex}** ")
-                        st.markdown(f"Taux correspondant au taux grammatical de votre texte(s) : **{richesse_gram}** ")
-                        st.markdown(f"Taux correspondant au taux verbal de votre texte(s) : **{richesse_verbale}** ") 
-                        st.markdown(f"Nombre de mots : **{compteur_mots}** ")  
+                        st.markdown("### Result on the lexical mean rate for the referent text(s).")
+                        st.markdown(f"Rate corresponding to the lexical rate of your text(s) : **{richesse_lex}** ")
+                        st.markdown(f"Rate corresponding to the grammatical rate of your text(s) : **{richesse_gram}** ")
+                        st.markdown(f"Rate corresponding to the verbal rate of your text(s) : **{richesse_verbale}** ") 
+                        st.markdown(f"word count: **{compteur_mots}** ")  
 
-                        st.markdown(f"Nombre de caractères: **{nrb}** ")  
+                        st.markdown(f"Character count: **{nrb}** ")  
 
-                        st.markdown(f"### Indicateur de richesse générale :  :red[{round(texte_metrique * 100,4)}]")  
-                        st.markdown(f"### Indicateur de richesse modale :  :red[{round(richesse_detect * 100,4)}]")  
+                        st.markdown(f"### General wealth indicator :  :red[{round(texte_metrique * 100,4)}]")  
+                        st.markdown(f"### Modal wealth indicator :  :red[{round(richesse_detect * 100,4)}]")  
                     except:
-                        st.warning("Votre texte est trop court.")
+                        st.warning("Your text is too short.")
                         
 
 
@@ -602,10 +588,10 @@ elif tabs == 'StendhalGPT Expert':
                             resul2 = resul.most_common(resul2)
 
                         except:
-                            st.warning('Texte trop court.')
+                            st.warning('Your text is too short.')
                     words_to_highlight = []
                     i = 34
-                    df = pd.DataFrame(resul2, columns=['Mots', 'Occurence'])
+                    df = pd.DataFrame(resul2, columns=['Words', 'Occurence'])
 
                     st.dataframe(df)
                     
@@ -633,19 +619,20 @@ elif tabs == 'StendhalGPT Expert':
                         nrb = count_characters(text_ref)
                         richesse_detect2 = detect_generated_text(text_ref)
 
-                        st.markdown("### Résultat sur le taux moyen lexical pour le(s) texte(s) à comparaître.")
-                        st.markdown(f"Taux correspondant au taux lexical de votre texte(s) : **{richesse_lex2}** ")
-                        st.markdown(f"Taux correspondant au taux grammatical de votre texte(s) : **{richesse_gram2}** ")
-                        st.markdown(f"Taux correspondant au taux verbal de votre texte(s) : **{richesse_verbale2}** ") 
-                        st.markdown(f"Nombre de mots : **{compteur_mots}** ")   
+                     
+                        st.markdown("### Result on the lexical mean rate for the referent text(s).")
+                        st.markdown(f"Rate corresponding to the lexical rate of your text(s) : **{richesse_lex2}** ")
+                        st.markdown(f"Rate corresponding to the grammatical rate of your text(s) : **{richesse_gram2}** ")
+                        st.markdown(f"Rate corresponding to the verbal rate of your text(s) : **{richesse_verbale2}** ") 
+                        st.markdown(f"word count: **{compteur_mots}** ")  
 
-                        st.markdown(f"Nombre de caractères: **{nrb}** ")  
+                        st.markdown(f"Character count: **{nrb}** ")  
 
-                        st.markdown(f"### Indicateur de richesse :  :red[{round(texte_metrique2 * 100,4)}]")  
-                        st.markdown(f"### Indicateur de richesse modale :  :red[{round(richesse_detect2 * 100,4)}]") 
+                        st.markdown(f"### General wealth indicator :  :red[{round(texte_metrique2 * 100,4)}]")  
+                        st.markdown(f"### Modal wealth indicator :  :red[{round(richesse_detect2 * 100,4)}]") 
 
                     except:
-                        st.warning("Votre texte est trop court.")
+                        st.warning("Your text is too short.")
                      
 
                     resul = lexical_field(text_ref)
@@ -660,11 +647,11 @@ elif tabs == 'StendhalGPT Expert':
                             #print(resul2)
 
                         except:
-                                st.warning('Votre texte est trop court.')
+                                st.warning('Your text is too short.')
 
                     i = 34
 
-                    df = pd.DataFrame(resul2, columns=['Mots', 'Occurence'])
+                    df = pd.DataFrame(resul2, columns=['Words', 'Occurence'])
 
                     st.dataframe(df)
                     plt.figure(figsize=(10,5))
@@ -688,17 +675,17 @@ elif tabs == 'StendhalGPT Expert':
                     ax.scatter(x, y)
 
                     # Ajout d'étiquettes et de limites aux axes
-                    ax.set_xlabel("Taux lexical")
-                    ax.set_ylabel("Rapport taux grammatical sur verbal")
+                    ax.set_xlabel("Lexical rate")
+                    ax.set_ylabel("Grammar to verbal ratio")
                     ax.set_xlim([0, 6])
                     ax.set_ylim([0, 12])
 
                     st.pyplot(plt)
 
                     dist = distance((x[0], y[0]), (x[1],y[1]))
-                    st.markdown(f"Distance entre les points {dist}.")
+                    st.markdown(f"distance between the points {dist}.")
                 except:
-                    st.info('Les textes trop courts pour une représentation 2D.')
+                    st.info('Texts too short for a 2D representation.')
 
                 bar.progress(100) 
             
@@ -706,23 +693,23 @@ elif tabs == 'StendhalGPT Expert':
 elif tabs == "StendhalGPT MultipleTextes":
 
     st.subheader("StendhalGPT MultipleTextes")
-    st.markdown("StendhalGPT MultipleTextes mesure les caractéristiques des textes fournis et les représente dans un plan bidimensionnel.")
-    st.info('StendhalGPT MultipleTextes est susceptible d\'évoluer.')
+    st.markdown("StendhalGPT MultipleTextes measures the characteristics of the supplied texts and represents them in a two-dimensional plane.")
+    st.info('StendhalGPT MultipleTextes is likely to evolve.')
 
 
-    texte1 = st.text_input("Texte 1")
-    texte22 =st.text_input("Texte 2")
-    texte3 = st.text_input("Texte 3")
-    texte4 = st.text_input("Texte 4")
-    texte5 = st.text_input("Texte 5")
+    texte1 = st.text_input("Text 1")
+    texte22 =st.text_input("Text 2")
+    texte3 = st.text_input("Text 3")
+    texte4 = st.text_input("Text 4")
+    texte5 = st.text_input("Text 5")
     
     resul = [texte1, texte22, texte3, texte4, texte5]
 
-    if st.button("Lancer l'analyse"):
+    if st.button("start the analysis"):
         try:
             calculate_stats(resul)
         except:
-            st.warning('Il y a eu une erreur dans le traitement de vos textes.')
+            st.warning('There was an error in the processing of your texts.')
 
 #elif tabs == "StendhalGPT FusionedText":
 #    
