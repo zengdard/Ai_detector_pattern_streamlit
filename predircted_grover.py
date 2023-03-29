@@ -41,7 +41,7 @@ from math import sqrt
 #nltk.download('stopwords')
 #nltk.download('averaged_perceptron_tagger')
 
-stop_words = set(stopwords.words('french'))
+stop_words = set(stopwords.words('english'))
 from st_on_hover_tabs import on_hover_tabs
 st.set_page_config(layout="wide")
 
@@ -465,7 +465,7 @@ elif tabs == 'StendhalGPT':
                 st.warning('The service is overloaded, want to use another method.')
 
 
-    if st.button('Vérifier simplement'):
+    if st.button('GO'):
             
         try : 
             diff = compare_markov_model(text, text_ref)
@@ -531,7 +531,7 @@ elif tabs == 'StendhalGPT Expert':
                         text_ref += pdf_reader.pages[page].extract_text()
         
 
-    if st.button('Vérifier'): #intégrer le texte de référence pour plus de rapidité 
+    if st.button('GO'): #intégrer le texte de référence pour plus de rapidité 
         if text == '' or text_ref=='':
             st.warning("Please indicate your text.")
         else:
@@ -705,7 +705,7 @@ elif tabs == "StendhalGPT MultipleTextes":
     
     resul = [texte1, texte22, texte3, texte4, texte5]
 
-    if st.button("start the analysis"):
+    if st.button("Start the analysis"):
         try:
             calculate_stats(resul)
         except:
