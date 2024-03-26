@@ -3,7 +3,7 @@ st.set_page_config(layout="wide")
 
 from st_on_hover_tabs import on_hover_tabs
 
-from stendhalgpt_fct import *
+from gpt_fct import *
 import pandas as pd
 
 
