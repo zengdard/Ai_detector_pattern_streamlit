@@ -23,7 +23,7 @@ import PyPDF2
 
 
 import openai
-openai.api_key = "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"
+openai.api_key = ""
 
 import numpy as np
 
@@ -68,7 +68,7 @@ def generation2(thm):
 def generation(thm):
     
     bar.progress(32)
-    openai.api_key = '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'
+    openai.api_key = '
     response = openai.Completion.create(
     model="text-davinci-003",
     prompt=thm,
@@ -711,35 +711,3 @@ elif tabs == "StendhalGPT MultipleTextes":
         except:
             st.warning('There was an error in the processing of your texts.')
 
-#elif tabs == "StendhalGPT FusionedText":
-#    
-#    st.subheader("StendhalGPT FusionedText")
-#    st.markdown("StendhalGPT tente d'identifier les parties du texte qui peuvent être générées et intégrées dans le corpus en repérant des données statistiques anormales par rapport à tout le texte complet. Les phrases surlignées en rouge, possèdent des statistiques en dehors de l'écart type de la moyenne de tout le texte.")
-#    st.info('StendhalGPT FusionedText est susceptible d\'évoluer.')
-#    text = st.text_input("Entrez votre texte ici.")
-#    ponctu = st.radio(
-#        "Sélectionnez une ponctuation pour partitionner votre texte",
-#        key="visibility",
-#        options=["Espace", "Point", "Virgule"],
-#    )
-#    if ponctu == 'Espace':
-#        ponctu = ' '
-#    elif ponctu == 'Point':
-#        ponctu = '.'
-#    else :
-#        ponctu = ","
-#
-#        
-#    if st.button('Vérifier'):
-#
-#        try:
-#            anormal_bloc = measure_lexical_richness(text, ponctu)
-#            highlighted_text = highlight_text(text, [word for block in anormal_bloc for word in block])
-#
-#            if anormal_bloc != []:
-#                st.markdown("**Blocs Anormaux** : \n" +str(highlighted_text), unsafe_allow_html=True)
-#            else : 
-#                st.markdown('Votre texte semble être uniforme.')
-#        except:
-#            st.warning('Un problème est survenu dans le traitement, veuillez choisir une ponctuation différente.')
-#        
