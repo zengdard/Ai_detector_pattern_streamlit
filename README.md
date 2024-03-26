@@ -1,3 +1,49 @@
+Description
+-----------
+
+Ce script Python contient plusieurs fonctions pour l'analyse de texte en français. Il utilise des bibliothèques telles que NLTK, OpenAI, NumPy, Pandas, Matplotlib et Streamlit pour fournir des fonctionnalités telles que le calcul de la richesse lexicale, grammaticale et verbale, la génération de texte, la détection de texte généré et la visualisation de données.
+
+Fonctionnalités
+---------------
+
+* Calcul de la richesse lexicale, grammaticale et verbale d'un texte.
+* Génération de texte en utilisant l'API OpenAI.
+* Détection de texte généré automatiquement.
+* Visualisation de données à l'aide de Matplotlib et Streamlit.
+* Analyse statistique de textes.
+
+Dépendances
+-----------
+
+* NLTK
+* OpenAI
+* NumPy
+* Pandas
+* Matplotlib
+* Streamlit
+
+Installation
+------------
+
+1. Clonez ce dépôt.
+2. Installez les dépendances en utilisant `pip install -r requirements.txt`.
+3. Ajoutez votre clé API OpenAI à l'environnement ou remplacez-la directement dans le script.
+
+Utilisation
+-----------
+
+Importez les fonctions souhaitées depuis le script et utilisez-les selon vos besoins. Assurez-vous d'avoir installé toutes les dépendances requises avant d'exécuter le script.
+
+Contribution
+------------
+
+Les contributions sont les bienvenues ! Si vous rencontrez des problèmes ou si vous souhaitez ajouter de nouvelles fonctionnalités, n'hésitez pas à ouvrir une issue ou à soumettre une pull request.
+
+License
+-------
+
+Ce projet est sous licence MIT. Consultez le fichier LICENSE pour plus de détails.
+
 Ce script contient plusieurs fonctions pour l'analyse de texte en français. Voici un bref aperçu des fonctionnalités :
 
 1. `calculate_stats` : calcule la richesse lexicale et la richesse générale d'un ou plusieurs textes et affiche un graphique en utilisant Streamlit.
