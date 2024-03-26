@@ -1,7 +1,6 @@
 import streamlit as st
 st.set_page_config(layout="wide")
 
-st.title('StendhalGPT')
 from st_on_hover_tabs import on_hover_tabs
 
 from stendhalgpt_fct import *
@@ -19,7 +18,7 @@ col5, col6 = st.columns(2)
 col7, col8, col9 = st.columns(3)
 
 with st.sidebar:
-        tabs = on_hover_tabs(tabName=['Accueil','StendhalGPT', 'StendhalGPT Expert', 'StendhalGPT MultipleTextes'], 
+        tabs = on_hover_tabs(tabName=['Accueil','', 'StendhalGPT Expert', 'StendhalGPT MultipleTextes'], 
                             iconName=['dashboard','home',  'toll', 'analytics'],
                             styles = {'navtab': {'background-color':'#FFFFFF',
                                                 'color': '#000000',
@@ -77,15 +76,8 @@ with open('TEXTE.txt', "r", encoding="utf-8") as f:
 
 
 if tabs == 'Accueil':
-    st.info('Si vous rencontrez des difficultés, vous pouvez nous contacter dans la page Contact de notre site.')
 
     st.markdown(content)
-
-
-    st.markdown('[Cliquez ici](https://www.stendhalgpt.fr/newsletter/) pour vous inscrire à la newsletter.')
-    st.markdown('[Cliquez ici](https://www.stendhalgpt.fr/docs-category/doc/) pour accéder à la documentation.')
-
-    st.caption('version 0.6.0')
 
 elif tabs == 'StendhalGPT':
     bar.progress(0) 
@@ -367,11 +359,11 @@ elif tabs == 'StendhalGPT Expert':
                 bar.progress(100) 
             
 
-elif tabs == "StendhalGPT MultipleTextes":
+elif tabs == " MultipleTextes":
 
-    st.subheader("StendhalGPT MultipleTextes")
-    st.markdown("StendhalGPT MultipleTextes mesure les caractéristiques des textes fournis et les représente dans un plan bidimensionnel.")
-    st.info('StendhalGPT MultipleTextes est susceptible d\'évoluer.')
+    st.subheader(" MultipleTextes")
+    st.markdown(" MultipleTextes mesure les caractéristiques des textes fournis et les représente dans un plan bidimensionnel.")
+    st.info(' MultipleTextes est susceptible d\'évoluer.')
 
 
     texte1 = st.text_input("Texte 1")
